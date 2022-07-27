@@ -13,22 +13,26 @@ func main() {
 	pb := progressbar.NewMultiProgress()
 	pb.Start()
 	var wg sync.WaitGroup
-	bar1, _ := pb.Add64Bar("1", 20)
+	//bar1, _ := pb.Add64Bar("1", 20)
+	_, _ = pb.Add64Bar("1", 20)
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		for i := 1; i <= 20; i++ {
-			bar1.Add64(1)
+			//bar1.Add64(1)
+			pb.BarAdd("1", 1)
 			time.Sleep(waitTime)
 		}
 	}()
 
-	bar2, _ := pb.AddDefaultBar("2", 40)
+	//bar2, _ := pb.AddDefaultBar("2", 40)
+	_, _ = pb.AddDefaultBar("2", 40)
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		for i := 0; i < 40; i++ {
-			bar2.Add64(1)
+			//bar2.Add64(1)
+			pb.BarAdd("2", 1)
 			time.Sleep(waitTime)
 		}
 	}()
