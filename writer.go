@@ -54,7 +54,7 @@ func NewWriter() *Writer {
 
 		mtx: &sync.Mutex{},
 	}
-	w.termWidth, _ = getTermSize()
+	w.termWidth, _ = getTermSize(int(Out.Fd()))
 	if w.termWidth != 0 {
 		w.overFlowHandled = true
 	}
