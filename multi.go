@@ -102,6 +102,20 @@ func (m *MultiProgress) BarSet(name string, n int) {
 	m.BarSet64(name, int64(n))
 }
 
+func (m *MultiProgress) BarChangeMax(name string, max int) {
+	m.BarChangeMax64(name, int64(max))
+}
+
+func (m *MultiProgress) BarChangeMax64(name string, max int64) {
+	m.rwMtx.Lock()
+	defer m.rwMtx.Unlock()
+	bar, ok := m.mapBars[name]
+	if !ok {
+		return
+	}
+	bar.ChangeMax64(max)
+}
+
 func (m *MultiProgress) Listen() {
 	for {
 		m.rwMtx.RLock()
