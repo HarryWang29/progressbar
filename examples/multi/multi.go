@@ -14,11 +14,11 @@ func main() {
 	pb.Start()
 	var wg sync.WaitGroup
 	//bar1, _ := pb.Add64Bar("1", 20)
-	_, _ = pb.Add64Bar("1", 20)
+	_, _ = pb.Add64Bar("1", 80)
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		for i := 1; i <= 20; i++ {
+		for i := 1; i <= 80; i++ {
 			//bar1.Add64(1)
 			pb.BarAdd("1", 1)
 			time.Sleep(waitTime)

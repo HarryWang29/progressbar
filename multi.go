@@ -45,6 +45,9 @@ func (m *MultiProgress) SetRefreshInterval(t time.Duration) {
 }
 
 func (m *MultiProgress) AddBar(name string, bar *ProgressBar) error {
+	if bar == nil {
+		return errors.New("bar is nil")
+	}
 	if _, ok := m.mapBars[name]; ok {
 		return errors.New("bar name already exists")
 	}
@@ -117,6 +120,17 @@ func (m *MultiProgress) Listen() {
 
 func (m *MultiProgress) print() {
 	finishCount := 0
+	//把已经完成的bar放在list最前面
+	for i := 0; i < len(m.barsNames); i++ {
+		bar := m.mapBars[m.barsNames[i]]
+		bar.render()
+		if bar.IsFinished() {
+			tmp := make([]string, 0, len(m.barsNames))
+			tmp = append(tmp, m.barsNames[i])
+			tmp = append(tmp, m.barsNames[:i]...)
+			m.barsNames = append(tmp, m.barsNames[i+1:]...)
+		}
+	}
 	//输出bar
 	for i := 0; i < len(m.barsNames); i++ {
 		bar, ok := m.mapBars[m.barsNames[i]]
@@ -124,7 +138,6 @@ func (m *MultiProgress) print() {
 			continue
 		}
 		//when bar is done, pop
-		bar.render()
 		s := bar.String()
 		if s == "" {
 			continue
