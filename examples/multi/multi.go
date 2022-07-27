@@ -13,7 +13,7 @@ func main() {
 	pb := progressbar.NewMultiProgress()
 	pb.Start()
 	var wg sync.WaitGroup
-	bar1 := pb.Add64Bar(20)
+	bar1, _ := pb.Add64Bar("1", 20)
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -23,7 +23,7 @@ func main() {
 		}
 	}()
 
-	bar2 := pb.AddDefaultBar(40)
+	bar2, _ := pb.AddDefaultBar("2", 40)
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -45,7 +45,7 @@ func main() {
 			BarStart:      "[",
 			BarEnd:        "]",
 		}))
-	pb.AddBar(bar3)
+	pb.AddBar("3", bar3)
 	wg.Add(1)
 	go func() {
 		defer wg.Done()

@@ -1,6 +1,7 @@
 package progressbar
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -12,8 +13,9 @@ var Out = os.Stdout
 var RefreshInterval = time.Millisecond * 50
 
 type MultiProgress struct {
-	Out  io.Writer
-	Bars []*ProgressBar
+	Out       io.Writer
+	barsNames []string
+	mapBars   map[string]*ProgressBar
 
 	RefreshInterval time.Duration
 	ticker          *time.Ticker
@@ -28,6 +30,8 @@ func NewMultiProgress() *MultiProgress {
 		RefreshInterval: RefreshInterval,
 		tDone:           make(chan bool),
 		rwMtx:           &sync.RWMutex{},
+		barsNames:       make([]string, 0),
+		mapBars:         make(map[string]*ProgressBar),
 	}
 	mp.lw = NewWriter()
 	mp.lw.Out = Out
@@ -40,22 +44,59 @@ func (m *MultiProgress) SetRefreshInterval(t time.Duration) {
 	m.RefreshInterval = t
 }
 
-func (m *MultiProgress) AddBar(bar *ProgressBar) {
+func (m *MultiProgress) AddBar(name string, bar *ProgressBar) error {
+	if _, ok := m.mapBars[name]; ok {
+		return errors.New("bar name already exists")
+	}
 	m.rwMtx.Lock()
 	defer m.rwMtx.Unlock()
-	m.Bars = append(m.Bars, bar)
+	m.mapBars[name] = bar
+	m.barsNames = append(m.barsNames, name)
+	return nil
 }
 
-func (m *MultiProgress) Add64Bar(max int64) *ProgressBar {
+func (m *MultiProgress) Add64Bar(name string, max int64) (*ProgressBar, error) {
+	if _, ok := m.mapBars[name]; ok {
+		return nil, errors.New("bar name already exists")
+	}
 	b := New64(max)
-	m.AddBar(b)
-	return b
+	return b, m.AddBar(name, b)
 }
 
-func (m *MultiProgress) AddDefaultBar(max int64, description ...string) *ProgressBar {
+func (m *MultiProgress) AddDefaultBar(name string, max int64, description ...string) (*ProgressBar, error) {
+	if _, ok := m.mapBars[name]; ok {
+		return nil, errors.New("bar name already exists")
+	}
 	b := Default(max, description...)
-	m.AddBar(b)
-	return b
+	return b, m.AddBar(name, b)
+}
+
+func (m *MultiProgress) BarAdd(name string, n int) {
+	m.BarAdd64(name, int64(n))
+}
+
+func (m *MultiProgress) BarAdd64(name string, n int64) {
+	m.rwMtx.Lock()
+	defer m.rwMtx.Unlock()
+	bar, ok := m.mapBars[name]
+	if !ok {
+		return
+	}
+	bar.Add64(n)
+}
+
+func (m *MultiProgress) BarSet64(name string, n int64) {
+	m.rwMtx.Lock()
+	defer m.rwMtx.Unlock()
+	bar, ok := m.mapBars[name]
+	if !ok {
+		return
+	}
+	bar.Set64(n)
+}
+
+func (m *MultiProgress) BarSet(name string, n int) {
+	m.BarSet64(name, int64(n))
 }
 
 func (m *MultiProgress) Listen() {
@@ -77,8 +118,11 @@ func (m *MultiProgress) Listen() {
 func (m *MultiProgress) print() {
 	finishCount := 0
 	//输出bar
-	for i := 0; i < len(m.Bars); i++ {
-		bar := m.Bars[i]
+	for i := 0; i < len(m.barsNames); i++ {
+		bar, ok := m.mapBars[m.barsNames[i]]
+		if !ok {
+			continue
+		}
 		//when bar is done, pop
 		bar.render()
 		s := bar.String()
@@ -88,7 +132,8 @@ func (m *MultiProgress) print() {
 		_, _ = fmt.Fprintln(m.lw, s)
 		if bar.IsFinished() {
 			m.rwMtx.Lock()
-			m.Bars = append(m.Bars[:i], m.Bars[i+1:]...)
+			delete(m.mapBars, m.barsNames[i])
+			m.barsNames = append(m.barsNames[:i], m.barsNames[i+1:]...)
 			finishCount++
 			m.rwMtx.Unlock()
 			i--
