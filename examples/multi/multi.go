@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/schollz/progressbar/v3"
+	"github.com/HarryWang29/progressbar"
 	"os"
 	"sync"
 	"time"
@@ -27,14 +27,14 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		for i := 1; i <= 40; i++ {
+		for i := 0; i < 40; i++ {
 			bar2.Add64(1)
 			time.Sleep(waitTime)
 		}
 	}()
 
 	time.Sleep(time.Second)
-	bar3 := progressbar.NewOptions(1000,
+	bar3 := progressbar.NewOptions(100,
 		progressbar.OptionSetWriter(os.Stdout),
 		progressbar.OptionSetWidth(15),
 		progressbar.OptionSetDescription(fmt.Sprintf("downloading %s ...", "test")),
@@ -49,7 +49,7 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		for i := 1; i <= 1000; i++ {
+		for i := 1; i <= 100; i++ {
 			bar3.Add64(1)
 			time.Sleep(waitTime)
 		}

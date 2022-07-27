@@ -77,12 +77,12 @@ func (w *Writer) Flush() error {
 
 	lines := 0
 	var currentLine bytes.Buffer
-	for _, b := range w.buf.Bytes() {
+	for _, b := range w.buf.String() {
 		if b == '\n' {
 			lines++
 			currentLine.Reset()
 		} else {
-			currentLine.Write([]byte{b})
+			currentLine.Write([]byte{byte(b)})
 			if w.overFlowHandled && currentLine.Len() > w.termWidth {
 				lines++
 				currentLine.Reset()

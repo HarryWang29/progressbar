@@ -374,9 +374,9 @@ func Default(max int64, description ...string) *ProgressBar {
 		OptionThrottle(65*time.Millisecond),
 		OptionShowCount(),
 		OptionShowIts(),
-		OptionOnCompletion(func() {
-			fmt.Fprint(os.Stderr, "\n")
-		}),
+		//OptionOnCompletion(func() {
+		//    fmt.Fprint(os.Stderr, "\n")
+		//}),
 		OptionSpinnerType(14),
 		OptionFullWidth(),
 	)
@@ -502,7 +502,7 @@ func (p *ProgressBar) Add64(num int64) error {
 
 	// always update if show bytes/second or its/second
 	//if updateBar || p.config.showIterationsPerSecond || p.config.showIterationsCount {
-	//	return p.render()
+	//    return p.render()
 	//}
 
 	return nil

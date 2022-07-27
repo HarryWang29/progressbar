@@ -75,16 +75,27 @@ func (m *MultiProgress) Listen() {
 }
 
 func (m *MultiProgress) print() {
+	finishCount := 0
 	//输出bar
-	for _, bar := range m.Bars {
+	for i := 0; i < len(m.Bars); i++ {
+		bar := m.Bars[i]
 		//when bar is done, pop
-		renderProgressBar(bar.config, &bar.state)
-		_, _ = fmt.Fprintln(m.lw, bar.String())
+		bar.render()
+		s := bar.String()
+		if s == "" {
+			continue
+		}
+		_, _ = fmt.Fprintln(m.lw, s)
 		if bar.IsFinished() {
-			fmt.Println("finished")
+			m.rwMtx.Lock()
+			m.Bars = append(m.Bars[:i], m.Bars[i+1:]...)
+			finishCount++
+			m.rwMtx.Unlock()
+			i--
 		}
 	}
 	_ = m.lw.Flush()
+	m.lw.lineCount -= finishCount
 }
 
 func (m *MultiProgress) Start() {
