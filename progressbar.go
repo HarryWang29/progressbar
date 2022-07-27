@@ -493,7 +493,7 @@ func (p *ProgressBar) Add64(num int64) error {
 	percent := float64(p.state.currentNum) / float64(p.config.max)
 	p.state.currentSaucerSize = int(percent * float64(p.config.width))
 	p.state.currentPercent = int(percent * 100)
-	updateBar := p.state.currentPercent != p.state.lastPercent && p.state.currentPercent > 0
+	//updateBar := p.state.currentPercent != p.state.lastPercent && p.state.currentPercent > 0
 
 	p.state.lastPercent = p.state.currentPercent
 	if p.state.currentNum > p.config.max {
@@ -501,9 +501,9 @@ func (p *ProgressBar) Add64(num int64) error {
 	}
 
 	// always update if show bytes/second or its/second
-	if updateBar || p.config.showIterationsPerSecond || p.config.showIterationsCount {
-		return p.render()
-	}
+	//if updateBar || p.config.showIterationsPerSecond || p.config.showIterationsCount {
+	//	return p.render()
+	//}
 
 	return nil
 }
@@ -835,7 +835,8 @@ func renderProgressBar(c config, s *state) (int, error) {
 
 	s.rendered = str
 
-	return getStringWidth(c, str, false), writeString(c, str)
+	//return getStringWidth(c, str, false), writeString(c, str)
+	return getStringWidth(c, str, false), nil
 }
 
 func clearProgressBar(c config, s state) error {

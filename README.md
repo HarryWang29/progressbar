@@ -1,3 +1,7 @@
+# THANKS
+- @schollz
+- @shirdonl
+
 # progressbar
 
 [![CI](https://github.com/schollz/progressbar/actions/workflows/ci.yml/badge.svg?branch=master&event=push)](https://github.com/schollz/progressbar/actions/workflows/ci.yml)
