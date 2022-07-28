@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/HarryWang29/progressbar"
+	"github.com/HarryWang29/progressbar/v4"
 	"os"
 	"sync"
 	"time"

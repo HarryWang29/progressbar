@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	"github.com/schollz/progressbar/v3"
+	"github.com/HarryWang29/progressbar/v4"
 )
 
 func main() {
