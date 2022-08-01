@@ -40,7 +40,7 @@ func getCurrentConsoleFont(h syscall.Handle, info *consoleFontInfo) (err error) 
 	return
 }
 
-func getTermSize() (int, int) {
+func getTermSize(_ int) (int, int) {
 	out, err := syscall.Open("CONOUT$", syscall.O_RDWR, 0)
 	if err != nil {
 		return 0, 0
